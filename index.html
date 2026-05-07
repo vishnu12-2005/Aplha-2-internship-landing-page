@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpha 2 Internship Program | Sqrock IT Solutions</title>
+    <meta name="description" content="Free Industry-Ready Training for Engineers. Real Projects. Guaranteed Certification.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000000;
+            --bg-lighter: #0d0d0d;
+            --bg-lightest: #1a1a1a;
+            --gold-primary: #f5a623;
+            --gold-secondary: #ffd700;
+            --gold-gradient: linear-gradient(135deg, #f5a623, #ffd700);
+            --text-primary: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: 1px solid rgba(245, 166, 35, 0.15);
+            --section-padding: 90px;
+        }
+
+        /* Globals */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        body.animating {
+            overflow: hidden;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; }
+        h1 { font-size: 72px; }
+        h2 { font-size: 48px; }
+        h3 { font-size: 24px; }
+        p { font-size: 16px; color: var(--text-muted); }
+        a { text-decoration: none; color: inherit; }
+        
+        .gold-text {
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+        .text-white { color: #ffffff; }
+        .text-muted { color: var(--text-muted); }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 40px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .section-label {
+            color: var(--gold-primary);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        section { padding: var(--section-padding) 0; }
+
+        /* Canvas Background */
+        canvas#bgCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 0;
+            pointer-events: none;
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+        #bgShine {
+            position: fixed;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            pointer-events: none;
+            background: repeating-linear-gradient(135deg, rgba(255,255,255,0) 0px, rgba(255,255,255,0) 200px, rgba(255,255,255,0.06) 250px, rgba(255,255,255,0) 300px, rgba(255,255,255,0) 500px);
+            mix-blend-mode: color-dodge;
+            z-index: 1;
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+            contain: strict;
+        }
+
+        /* Content Wrapper Visibility */
+        .content-wrapper {
+            position: relative;
+            z-index: 2;
+            visibility: hidden;
+        }
+        .content-wrapper.visible {
+            visibility: visible;
+        }
+
+        /* Animations */
+        @keyframes glitchEntry {
+            0% { opacity: 0; filter: blur(4px); transform: scale(1.02) translateY(10px); text-shadow: none; }
+            30% { opacity: 1; filter: blur(0); transform: scale(1) translateY(0); text-shadow: 4px 0 rgba(255,0,0,0.7), -4px 0 rgba(0,0,255,0.7); }
+            45% { transform: translate(3px, 0); text-shadow: -4px 0 rgba(255,0,0,0.7), 4px 0 rgba(0,0,255,0.7); }
+            60% { transform: translate(-3px, 0); text-shadow: 4px 0 rgba(255,0,0,0.7), -4px 0 rgba(0,0,255,0.7); }
+            75% { transform: translate(0, 2px); text-shadow: none; }
+            100% { opacity: 1; transform: translate(0); text-shadow: none; }
+        }
+        @keyframes smoothFadeUp3D {
+            0% { opacity: 0; transform: perspective(900px) rotateY(15deg) rotateX(10deg) translateY(60px) scale(0.9); }
+            100% { opacity: 1; transform: perspective(900px) rotateY(-10deg) rotateX(5deg) translateY(0px) scale(1); }
+        }
+        .glitch-enter {
+            opacity: 0;
+            animation: glitchEntry 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        .smooth-enter-delayed {
+            opacity: 0;
+            animation: smoothFadeUp3D 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 400ms forwards, float 3.5s ease-in-out 1900ms infinite;
+        }
+
+        @keyframes float {
+            0% { transform: perspective(900px) rotateY(-10deg) rotateX(5deg) translateY(0px); }
+            50% { transform: perspective(900px) rotateY(-10deg) rotateX(5deg) translateY(-14px); }
+            100% { transform: perspective(900px) rotateY(-10deg) rotateX(5deg) translateY(0px); }
+        }
+
+        @keyframes fadeUpAnim {
+            0% { opacity: 0; transform: translateY(40px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeDownAnim {
+            0% { opacity: 0; transform: translateY(-40px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-up { opacity: 0; transform: translateY(40px); transition: all 0.2s ease-out; }
+        .fade-in-up.visible { animation: fadeUpAnim 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+        
+        .fade-in-down { opacity: 0; transform: translateY(-40px); transition: all 0.2s ease-out; }
+        .fade-in-down.visible { animation: fadeDownAnim 0.8s ease forwards; }
+
+        /* Buttons */
+        .cta-btn {
+            display: inline-block;
+            padding: 14px 28px;
+            border-radius: 7px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 15px;
+        }
+        .cta-btn.primary-grad {
+            background: var(--gold-gradient);
+            color: #000000;
+            box-shadow: 0 0 30px rgba(245,166,35,0.4);
+        }
+        .cta-btn.primary-grad:hover {
+            filter: brightness(1.1);
+            transform: scale(1.03);
+        }
+        .cta-btn.secondary {
+            background: transparent;
+            color: #ffffff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .cta-btn.secondary:hover {
+            border-color: var(--gold-primary);
+            color: var(--gold-primary);
+        }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(245,166,35,0.15);
+            z-index: 100;
+            transition: box-shadow 0.3s ease;
+            opacity: 1;
+        }
+        .navbar.scrolled {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 10px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo-text { font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; }
+        .logo-sub { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 4px; color: var(--text-muted); margin-top: 2px; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a {
+            color: rgba(255,255,255,0.65);
+            font-size: 14px;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-links a:hover { color: var(--gold-primary); }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; width: 0%; height: 1px;
+            background: var(--gold-primary); transition: width 0.3s ease;
+        }
+        .nav-links a:hover::after { width: 100%; }
+
+        /* 2. Hero Section */
+        .hero { min-height: calc(100vh - 80px); display: flex; align-items: center; padding: 60px 0; }
+        .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        
+        .badge {
+            display: inline-block;
+            background: rgba(245,166,35,0.08);
+            border: 1px solid rgba(245,166,35,0.3);
+            color: var(--gold-primary);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+        .hero h1 { margin-bottom: 24px; letter-spacing: -1.5px; }
+        .hero-subtext { font-size: 17px; color: rgba(255,255,255,0.55); margin-bottom: 40px; max-width: 80%; }
+        .hero-ctas { display: flex; gap: 20px; margin-bottom: 60px; }
+        
+        .hero-stats { display: flex; gap: 30px; align-items: center; }
+        .stat-item { position: relative; padding-right: 30px; }
+        .stat-item:not(:last-child)::after {
+            content: ''; position: absolute; right: 0; top: 10%; height: 80%; width: 1px;
+            background: rgba(245,166,35,0.3);
+        }
+        .stat-number { color: var(--gold-primary); font-size: 20px; font-weight: 700; }
+        .stat-label { font-size: 12px; color: var(--text-muted); }
+
+        .stats-card-3d {
+            background: var(--glass-bg);
+            border: 1px solid rgba(245,166,35,0.2);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 80px rgba(245,166,35,0.1);
+            transform-style: preserve-3d;
+        }
+        .card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 30px; }
+        .card-header .icon { font-size: 32px; background: var(--gold-gradient); -webkit-background-clip: text; color: transparent; }
+        .card-header h4 { font-size: 18px; color: #fff; margin-bottom: 4px; }
+        .card-header p { font-size: 13px; margin: 0; }
+        .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-item {
+            background: rgba(245,166,35,0.06);
+            border: 1px solid rgba(245,166,35,0.12);
+            padding: 20px;
+            border-radius: 12px;
+        }
+        .grid-item h3 { color: var(--gold-primary); font-size: 24px; margin-bottom: 4px; }
+        .grid-item p { font-size: 13px; margin: 0; }
+
+        /* 3. Why Alpha 2 */
+        .text-center { text-align: center; }
+        .mt-20 { margin-top: 20px; } .mt-30 { margin-top: 30px; } .mt-50 { margin-top: 50px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+        
+        .card {
+            background: var(--glass-bg);
+            border: var(--glass-border);
+            border-radius: 18px;
+            padding: 40px 24px;
+            transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: transparent; transition: background 0.4s ease;
+        }
+        .card:hover::before { background: var(--gold-primary); }
+        .card:hover {
+            transform: translateY(-16px) scale(1.05) !important;
+            box-shadow: 0 30px 70px rgba(245,166,35,0.25) !important;
+            transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1) 0s !important;
+        }
+        .icon-box { font-size: 32px; margin-bottom: 20px; }
+        .card h3 { font-size: 17px; margin-bottom: 12px; }
+        .card p { font-size: 13px; margin: 0; }
+
+        /* 4. About */
+        .split-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+        .bullet-list { list-style: none; }
+        .bullet-list li { margin-bottom: 12px; font-size: 15px; color: #fff; display: flex; align-items: center; gap: 12px; }
+        .gold-marker { color: var(--gold-primary); font-size: 12px; }
+        .image-panel {
+            position: relative;
+            border: 1px solid rgba(245,166,35,0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            height: 450px;
+            background: var(--glass-bg);
+        }
+        .bg-img {
+            width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.6s ease;
+        }
+        .image-panel:hover .bg-img { transform: scale(1.08); }
+        .image-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2));
+            z-index: 1; pointer-events: none;
+        }
+        .floating-badge {
+            position: absolute; bottom: 30px; left: 30px;
+            background: var(--gold-primary);
+            color: #000; font-weight: 700; font-size: 14px;
+            padding: 12px 24px; border-radius: 8px;
+            z-index: 2;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* 5. What You'll Gain */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .gain-card { transform-style: preserve-3d; }
+        .gain-icon { 
+            width: 48px; height: 48px; border-radius: 12px;
+            background: rgba(245,166,35,0.1); display: flex; align-items: center; justify-content: center;
+            font-size: 24px; margin-bottom: 24px;
+        }
+
+        /* 6. Journey */
+        .timeline { margin: 60px 0; position: relative; }
+        .timeline-line {
+            position: absolute; top: 24px; left: 0; right: 0; height: 2px;
+            background: rgba(245,166,35,0.2); z-index: 1;
+        }
+        .timeline-progress {
+            position: absolute; top: 0; left: 0; height: 100%; width: 0%;
+            background: var(--gold-gradient); transition: width 0.1s linear;
+        }
+        .timeline-nodes {
+            display: flex; justify-content: space-between; position: relative; z-index: 2;
+        }
+        .timeline-node { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 120px; }
+        .node-week { font-size: 13px; color: var(--gold-primary); font-weight: 600; text-transform: uppercase; }
+        .node-circle {
+            width: 16px; height: 16px; border-radius: 50%;
+            border: 2px solid var(--gold-primary); background: var(--bg);
+            transition: all 0.4s ease;
+        }
+        .node-stage { font-size: 15px; color: #fff; font-weight: 600; }
+        .timeline-node.active .node-circle { background: var(--gold-primary); box-shadow: 0 0 15px var(--gold-primary); }
+
+        .carousel-track { overflow: hidden; width: 100vw; margin-left: calc(-50vw + 50%); margin-top: 60px; padding: 20px 0; }
+        .carousel-cards {
+            display: flex; gap: 30px; width: max-content;
+            animation: slideCarousel 30s linear infinite;
+        }
+        .carousel-cards:hover { animation-play-state: paused; }
+        @keyframes slideCarousel {
+            from { transform: translateX(0); }
+            to { transform: translateX(calc(-50% - 15px)); }
+        }
+        .journey-card {
+            width: 350px; background: rgba(255,255,255,0.04); border: 1px solid rgba(245,166,35,0.2);
+            border-radius: 16px; padding: 30px; backdrop-filter: blur(10px);
+            transition: all 0.4s ease; cursor: pointer;
+        }
+        .journey-card:hover {
+            transform: scale(1.02); background: rgba(255,255,255,0.06);
+            box-shadow: 0 15px 40px rgba(245,166,35,0.1);
+        }
+        .journey-step { color: var(--gold-primary); font-size: 48px; font-weight: 800; opacity: 0.3; margin-bottom: 10px; line-height: 1; }
+        .journey-card h4 { font-size: 20px; color: #fff; margin-bottom: 16px; }
+        .journey-detail { opacity: 0; max-height: 0; overflow: hidden; transition: all 0.4s ease; }
+        .journey-card:hover .journey-detail { opacity: 1; max-height: 100px; margin-top: 16px; }
+
+        /* 7. FAQ */
+        .faq-container { max-width: 800px; margin: 50px auto 0; }
+        .faq-item {
+            border-bottom: 1px solid rgba(245,166,35,0.1);
+            padding: 24px 0; cursor: pointer; position: relative;
+        }
+        .faq-question {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 18px; color: #fff; font-weight: 500;
+        }
+        .faq-icon {
+            color: var(--gold-primary); font-size: 24px; transition: transform 0.4s ease; line-height: 1;
+        }
+        .faq-answer {
+            max-height: 0; overflow: hidden; transition: all 0.4s ease;
+            font-size: 15px; color: var(--text-muted); padding-right: 40px;
+        }
+        .faq-item.open .faq-icon { transform: rotate(45deg); }
+        .faq-item.open .faq-answer { max-height: 200px; margin-top: 16px; }
+        .faq-item.open { border-left: 3px solid var(--gold-primary); padding-left: 20px; }
+
+        /* 8. Contact Section */
+        .contact-section {
+            position: relative; height: 100vh; min-height: 800px;
+            display: flex; overflow: hidden; padding: 0;
+        }
+        .contact-white-bg {
+            position: absolute; top: 0; right: 0; bottom: 0; left: 50%;
+            background: #ffffff; transform-origin: bottom left; transform: skewX(-10deg);
+            z-index: 1;
+        }
+        .contact-slash-line {
+            position: absolute; top: -10%; bottom: -10%; left: 50%; width: 2px;
+            background: #f5a623; transform-origin: bottom left; transform: skewX(-10deg);
+            box-shadow: 0 0 20px #f5a623, 0 0 40px rgba(245,166,35,0.5);
+            z-index: 3;
+        }
+        .contact-left {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            padding: 0 10%; position: relative; z-index: 2;
+        }
+        .contact-right {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            position: relative; z-index: 2; padding: 0 5%;
+        }
+
+        .diamond-bg {
+            position: absolute; top: 50%; left: 10%;
+            width: 300px; height: 300px; border: 2px solid rgba(245,166,35,0.12);
+            transform-origin: center; animation: rotateDiamond 20s linear infinite; z-index: -1;
+        }
+        @keyframes rotateDiamond {
+            from { transform: translateY(-50%) rotate(0deg); }
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        .contact-title { font-size: 64px; line-height: 1.1; margin-bottom: 50px; }
+        .contact-title .light { font-weight: 300; font-size: 48px; color: #fff; }
+        .contact-title .bold { font-weight: 700; font-size: 56px; color: #fff; }
+        .contact-title .heavy { font-weight: 800; font-size: 64px; }
+
+        .info-box {
+            display: flex; align-items: center; gap: 20px;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(245,166,35,0.2);
+            border-left: 3px solid var(--gold-primary); border-radius: 12px;
+            padding: 20px 24px; margin-bottom: 20px; max-width: 400px;
+            backdrop-filter: blur(10px); 
+            transform: translateX(-40px); opacity: 0; transition: all 0.2s ease-out;
+        }
+        .contact-section.visible .info-box { transform: translateX(0); opacity: 1; }
+        .contact-section.visible .info-box:nth-child(1) { transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s; }
+        .contact-section.visible .info-box:nth-child(2) { transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s; }
+        .contact-section.visible .info-box:nth-child(3) { transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.7s; }
+        .contact-section.visible .info-box:hover { border-color: rgba(245,166,35,0.5); transform: translateX(8px) !important; transition: all 0.3s ease; }
+        .info-box .icon { font-size: 24px; }
+        .info-box .label { display: block; font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;}
+        .info-box .value { color: var(--text-muted); font-size: 15px; }
+
+        .form-box {
+            background: rgba(0,0,0,0.05); border: 1px solid rgba(245,166,35,0.35);
+            border-radius: 20px; padding: 48px; width: 100%; max-width: 500px;
+            backdrop-filter: blur(20px); box-shadow: 0 20px 60px rgba(245,166,35,0.08);
+        }
+        .form-group { margin-bottom: 24px; }
+        .form-row { display: flex; gap: 20px; }
+        .form-group.half { flex: 1; }
+        .form-box label {
+            display: block; font-size: 11px; font-weight: 700; color: #000;
+            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;
+        }
+        .form-box input, .form-box textarea {
+            width: 100%; background: #fff; border: none;
+            border-bottom: 2px solid rgba(245,166,35,0.4);
+            padding: 12px 0; font-size: 15px; color: #000; font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease; outline: none;
+        }
+        .form-box input:focus, .form-box textarea:focus {
+            border-bottom-color: var(--gold-primary);
+            box-shadow: 0 10px 20px -10px rgba(245,166,35,0.3);
+        }
+        .submit-btn {
+            width: 100%; background: var(--gold-gradient); color: #000;
+            border: none; padding: 18px; border-radius: 8px; font-size: 16px;
+            font-weight: 800; cursor: pointer; transition: all 0.3s ease; margin-top: 10px;
+        }
+        .submit-btn:hover { transform: scale(1.02); box-shadow: 0 10px 30px rgba(245,166,35,0.4); }
+
+        /* Scroll Entry for Contact */
+        .contact-left-content { transform: translateX(-60px); opacity: 0; transition: all 0.2s ease-out; }
+        .contact-right-content { transform: translateX(60px); opacity: 0; transition: all 0.2s ease-out; }
+        .contact-slash-line { opacity: 0; transition: opacity 0.2s ease-out; }
+        .contact-section.visible .contact-left-content { transform: translateX(0); opacity: 1; transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .contact-section.visible .contact-right-content { transform: translateX(0); opacity: 1; transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .contact-section.visible .contact-slash-line { opacity: 1; transition: opacity 1s ease 0.5s; }
+
+        /* 9. Footer */
+        footer {
+            padding: 32px 70px; border-top: 1px solid rgba(245,166,35,0.12);
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2;
+        }
+        .footer-center { font-size: 13px; color: var(--text-muted); }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { font-size: 13px; color: var(--text-muted); transition: color 0.3s ease; }
+        .footer-links a:hover { color: var(--gold-primary); }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1279px) {
+            h1 { font-size: 56px; } h2 { font-size: 40px; }
+            .hero-grid, .split-2, .grid-4, .grid-3 { grid-template-columns: 1fr 1fr; gap: 40px; }
+            .contact-section { flex-direction: column; height: auto; padding: 100px 0; }
+            .contact-white-bg, .contact-slash-line { display: none; }
+            .contact-right { margin-top: 60px; padding: 0 20px; }
+            .form-box { max-width: 100%; }
+            .form-box label { color: #fff; }
+            .form-box input, .form-box textarea { background: rgba(255,255,255,0.05); color: #fff; padding: 12px; }
+        }
+        @media (max-width: 767px) {
+            h1 { font-size: 40px; } h2 { font-size: 32px; }
+            .hero-grid, .split-2, .grid-4, .grid-3 { grid-template-columns: 1fr; }
+            .nav-links, .cta-btn.primary { display: none; }
+            .hero-stats { flex-wrap: wrap; }
+            .stat-item { width: 45%; margin-bottom: 20px; }
+            .stat-item::after { display: none; }
+            footer { flex-direction: column; gap: 20px; text-align: center; }
+            .timeline-nodes { flex-direction: column; gap: 40px; align-items: flex-start; margin-left: 20px; }
+            .timeline-line { left: 28px; top: 0; height: 100%; width: 2px; }
+            .timeline-progress { width: 100%; height: 0%; }
+            .timeline-node { flex-direction: row; width: auto; }
+        }
+
+        /* Dynamic 3D Scroll Glass Shine */
+        .stats-card-3d, .info-box, .form-box { position: relative; overflow: hidden; }
+        @keyframes glassShineAnim {
+            0% { background-position: 200% 200%; }
+            100% { background-position: -200% -200%; }
+        }
+        .stats-card-3d::after, .card::after, .info-box::after, .form-box::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 35%, rgba(245,166,35,0.12) 50%, rgba(255,255,255,0) 65%, rgba(255,255,255,0) 100%);
+            background-size: 200% 200%;
+            background-position: calc(200% - var(--scroll-progress) * 400%) calc(200% - var(--scroll-progress) * 400%);
+            pointer-events: none;
+            z-index: 10;
+            will-change: background-position;
+        }
+
+    </style>
+</head>
+<body class="animating">
+    
+    <canvas id="bgCanvas"></canvas>
+    <div id="bgShine"></div>
+
+    <div class="content-wrapper" id="content-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar" id="navbar">
+            <div class="nav-container">
+                <a href="https://www.sqrock.cloud/" class="logo">
+                    <img src="./logo-dark.png" alt="Sqrock IT Solution" style="height: 130px; width: auto; object-fit: contain; transform-origin: left center; margin: -40px 0 -40px -20px;">
+                </a>
+                <div class="nav-links">
+                    <a href="https://www.sqrock.cloud/">Home</a>
+                    <a href="https://www.sqrock.cloud/services">Services</a>
+                    <a href="https://www.sqrock.cloud/pricing">Pricing</a>
+                    <a href="https://www.sqrock.cloud/pricing">About</a>
+                    <a href="https://www.sqrock.cloud/contact">Contact</a>
+                </div>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <a href="https://www.sqrock.cloud/getquote" class="cta-btn" style="padding: 10px 20px; font-size: 14px; background: #fff; color: #000; font-weight: 600; border-radius: 7px; transition: transform 0.3s ease, filter 0.3s ease;" onmouseover="this.style.filter='brightness(0.9)'; this.style.transform='scale(1.02)'" onmouseout="this.style.filter='none'; this.style.transform='none'">Get Quote</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero -->
+        <header class="hero" id="home">
+            <div class="container hero-grid">
+                <div class="hero-left hero-content">
+                    <div class="badge">🔥 Limited Seats Available — 2025 Batch</div>
+                    <h1>
+                        <span class="gold-text">Alpha 2</span><br>
+                        <span>Internship Program</span>
+                    </h1>
+                    <p class="hero-subtext">Free Industry-Ready Training for Engineers • Real Projects • Guaranteed Certification</p>
+                    <div class="hero-ctas">
+                        <a href="https://www.sqrock.cloud/alpha2-interns" class="cta-btn primary-grad">Apply Now - Free →</a>
+                        <a href="https://www.sqrock.cloud/alpha2-interns" class="cta-btn secondary">Watch Demo ⚡</a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item"><div class="stat-number" data-target="5000" data-suffix="+">0</div><div class="stat-label">Students Trained</div></div>
+                        <div class="stat-item"><div class="stat-number" data-target="85" data-suffix="%">0</div><div class="stat-label">Placement Rate</div></div>
+                        <div class="stat-item"><div class="stat-number" data-target="200" data-suffix="+">0</div><div class="stat-label">Partner Companies</div></div>
+                        <div class="stat-item"><div class="stat-number" data-target="50" data-suffix="+">0</div><div class="stat-label">Expert Mentors</div></div>
+                    </div>
+                </div>
+                <div class="hero-right">
+                    <div class="stats-card-3d">
+                        <div class="card-header">
+                            <span class="icon">✨</span>
+                            <div>
+                                <h4>Sqrock IT Solutions</h4>
+                                <p class="text-muted">Performance Overview</p>
+                            </div>
+                        </div>
+                        <div class="card-grid">
+                            <div class="grid-item"><h3>98%</h3><p class="text-muted">Completion</p></div>
+                            <div class="grid-item"><h3>24/7</h3><p class="text-muted">Support</p></div>
+                            <div class="grid-item"><h3>4.9/5</h3><p class="text-muted">Rating</p></div>
+                            <div class="grid-item"><h3>#1</h3><p class="text-muted">Platform</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Why Alpha 2 -->
+        <section id="why" class="fade-in-up">
+            <div class="container">
+                <div class="text-center">
+                    <span class="section-label">◆ WHY ALPHA 2</span>
+                    <h2><span class="text-white">Everything You Need to</span> <br><span class="gold-text">Kickstart Your Career</span></h2>
+                    <p class="mt-20">Join an ecosystem designed to transform students into industry professionals.</p>
+                </div>
+                <div class="grid-4 mt-50">
+                    <div class="card">
+                        <div class="icon-box">🎓</div>
+                        <h3 class="text-white">Free Training</h3>
+                        <p>High-quality, industry-standard education at absolutely zero cost to you.</p>
+                    </div>
+                    <div class="card">
+                        <div class="icon-box">💻</div>
+                        <h3 class="text-white">Real Projects</h3>
+                        <p>Work on live industry projects that build your portfolio and experience.</p>
+                    </div>
+                    <div class="card">
+                        <div class="icon-box">📜</div>
+                        <h3 class="text-white">Certificate</h3>
+                        <p>Receive a verified certification recognized by top partner companies.</p>
+                    </div>
+                    <div class="card">
+                        <div class="icon-box">🤝</div>
+                        <h3 class="text-white">Community Support</h3>
+                        <p>Join a network of thousands of engineers and collaborate daily.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Program -->
+        <section id="about" class="fade-in-up">
+            <div class="container split-2">
+                <div class="about-text">
+                    <div class="badge">Bridge the Gap Between Academia & Industry</div>
+                    <h2 class="text-white mt-20">Transforming <span class="gold-text">Potential</span> into <span class="gold-text">Performance</span></h2>
+                    <p class="mt-20">Alpha 2 is an intensive, immersive internship program developed by Sqrock IT Solutions. We focus on bridging the gap between theoretical knowledge and practical industry requirements.</p>
+                    <ul class="bullet-list mt-20">
+                        <li><span class="gold-marker">◆</span> Industry-aligned curriculum</li>
+                        <li><span class="gold-marker">◆</span> Live project experience</li>
+                        <li><span class="gold-marker">◆</span> 1-on-1 mentorship</li>
+                        <li><span class="gold-marker">◆</span> Placement preparation</li>
+                    </ul>
+                    <a href="https://www.sqrock.cloud/alpha2-interns" class="cta-btn primary-grad mt-30">Secure Your Spot →</a>
+                </div>
+                <div class="about-image-wrapper">
+                    <div class="image-panel">
+                        <div class="image-overlay"></div>
+                        <div class="bg-img" style="background-image: url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80');"></div>
+                        <div class="floating-badge">✦ 5000+ Engineers Trained</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- What You'll Gain -->
+        <section id="gain" class="fade-in-up">
+            <div class="container">
+                <div class="text-center">
+                    <span class="section-label">◆ WHAT YOU'LL GAIN</span>
+                    <h2><span class="text-white">Empowering Your</span> <span class="gold-text">Future</span></h2>
+                </div>
+                <div class="grid-3 mt-50">
+                    <div class="card gain-card">
+                        <div class="gain-icon">👨‍🏫</div>
+                        <h3 class="text-white">Industry Expert Mentors</h3>
+                        <p>Learn directly from professionals working at top tech companies.</p>
+                    </div>
+                    <div class="card gain-card">
+                        <div class="gain-icon">🎯</div>
+                        <h3 class="text-white">Placement Assistance</h3>
+                        <p>Resume building, mock interviews, and direct referrals to partners.</p>
+                    </div>
+                    <div class="card gain-card">
+                        <div class="gain-icon">⚡</div>
+                        <h3 class="text-white">Practical Learning</h3>
+                        <p>Focus on 80% practical implementation and 20% theory.</p>
+                    </div>
+                    <div class="card gain-card">
+                        <div class="gain-icon">♾️</div>
+                        <h3 class="text-white">Lifetime Access</h3>
+                        <p>Get unlimited access to course materials and community forums forever.</p>
+                    </div>
+                    <div class="card gain-card">
+                        <div class="gain-icon">🏆</div>
+                        <h3 class="text-white">Industry Recognition</h3>
+                        <p>Your certification acts as a valid experience letter for entry-level roles.</p>
+                    </div>
+                    <div class="card gain-card">
+                        <div class="gain-icon">⏱️</div>
+                        <h3 class="text-white">Flexible Schedule</h3>
+                        <p>Designed for college students with flexible learning hours.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Journey -->
+        <section id="journey" class="fade-in-up">
+            <div class="container text-center">
+                <span class="section-label">◆ YOUR JOURNEY AT ALPHA 2</span>
+                <h2><span class="text-white">The Path to</span> <span class="gold-text">Success</span></h2>
+                
+                <div class="timeline mt-50">
+                    <div class="timeline-line">
+                        <div class="timeline-progress"></div>
+                    </div>
+                    <div class="timeline-nodes">
+                        <div class="timeline-node">
+                            <span class="node-week">Week 1</span>
+                            <div class="node-circle"></div>
+                            <span class="node-stage">Training</span>
+                        </div>
+                        <div class="timeline-node">
+                            <span class="node-week">Week 2</span>
+                            <div class="node-circle"></div>
+                            <span class="node-stage">Real Projects</span>
+                        </div>
+                        <div class="timeline-node">
+                            <span class="node-week">Week 3</span>
+                            <div class="node-circle"></div>
+                            <span class="node-stage">Mentorship</span>
+                        </div>
+                        <div class="timeline-node">
+                            <span class="node-week">Week 4</span>
+                            <div class="node-circle"></div>
+                            <span class="node-stage">Certification</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-track">
+                <div class="carousel-cards">
+                    <!-- Original -->
+                    <div class="journey-card">
+                        <div class="journey-step">01</div>
+                        <h4>Core Training</h4>
+                        <ul class="bullet-list">
+                            <li><span class="gold-marker">◆</span> Fundamentals & Best Practices</li>
+                            <li><span class="gold-marker">◆</span> Modern Tech Stack</li>
+                        </ul>
+                        <p class="journey-detail">Deep dive into the core concepts required by the industry, laying a strong foundation for your career.</p>
+                    </div>
+                    <div class="journey-card">
+                        <div class="journey-step">02</div>
+                        <h4>Real Projects</h4>
+                        <ul class="bullet-list">
+                            <li><span class="gold-marker">◆</span> Client Requirements</li>
+                            <li><span class="gold-marker">◆</span> Agile Development</li>
+                        </ul>
+                        <p class="journey-detail">Apply your skills to build production-ready applications solving real business problems.</p>
+                    </div>
+                    <div class="journey-card">
+                        <div class="journey-step">03</div>
+                        <h4>Expert Mentorship</h4>
+                        <ul class="bullet-list">
+                            <li><span class="gold-marker">◆</span> Code Reviews</li>
+                            <li><span class="gold-marker">◆</span> Career Guidance</li>
+                        </ul>
+                        <p class="journey-detail">Get personalized feedback and actionable advice from senior engineers to fast-track growth.</p>
+                    </div>
+                    <div class="journey-card">
+                        <div class="journey-step">04</div>
+                        <h4>Certification</h4>
+                        <ul class="bullet-list">
+                            <li><span class="gold-marker">◆</span> Final Assessment</li>
+                            <li><span class="gold-marker">◆</span> Portfolio Building</li>
+                        </ul>
+                        <p class="journey-detail">Complete your internship with a verified certificate and a polished portfolio ready for recruiters.</p>
+                    </div>
+                    <!-- Duplicate for infinite scroll -->
+                    <div class="journey-card">
+                        <div class="journey-step">01</div>
+                        <h4>Core Training</h4>
+                        <ul class="bullet-list">
+                            <li><span class="gold-marker">◆</span> Fundamentals & Best Practices</li>
+                            <li><span class="gold-marker">◆</span> Modern Tech Stack</li>
+                        </ul>
+                        <p class="journey-detail">Deep dive into the core concepts required by the industry, laying a strong foundation for your career.</p>
+                    </div>
+                    <div class="journey-card">
+                        <div class="journey-step">02</div>
+                        <h4>Real Projects</h4>
+                        <ul class="bullet-list">
+                            <li><span class="gold-marker">◆</span> Client Requirements</li>
+                            <li><span class="gold-marker">◆</span> Agile Development</li>
+                        </ul>
+                        <p class="journey-detail">Apply your skills to build production-ready applications solving real business problems.</p>
+                    </div>
+                    <div class="journey-card">
+                        <div class="journey-step">03</div>
+                        <h4>Expert Mentorship</h4>
+                        <ul class="bullet-list">
+                            <li><span class="gold-marker">◆</span> Code Reviews</li>
+                            <li><span class="gold-marker">◆</span> Career Guidance</li>
+                        </ul>
+                        <p class="journey-detail">Get personalized feedback and actionable advice from senior engineers to fast-track growth.</p>
+                    </div>
+                    <div class="journey-card">
+                        <div class="journey-step">04</div>
+                        <h4>Certification</h4>
+                        <ul class="bullet-list">
+                            <li><span class="gold-marker">◆</span> Final Assessment</li>
+                            <li><span class="gold-marker">◆</span> Portfolio Building</li>
+                        </ul>
+                        <p class="journey-detail">Complete your internship with a verified certificate and a polished portfolio ready for recruiters.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq" class="fade-in-up">
+            <div class="container text-center">
+                <span class="section-label">◆ FAQ</span>
+                <h2><span class="text-white">Frequently Asked</span> <span class="gold-text">Questions</span></h2>
+                <p class="mt-20">Everything you need to know about the program</p>
+                
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Is the training really free?</span>
+                            <span class="faq-icon">+</span>
+                        </div>
+                        <div class="faq-answer">Yes, the Alpha 2 Internship Program is completely free for all selected candidates. We believe in providing quality education accessible to everyone. No hidden charges, no credit card required,</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>What is the duration of the program?</span>
+                            <span class="faq-icon">+</span>
+                        </div>
+                        <div class="faq-answer">The program runs for 3 months with flexible learning schedules. You'll need to dedicate 10-15 hours per week. Weekend batches are also available for working professionals.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Who can apply?</span>
+                            <span class="faq-icon">+</span>
+                        </div>
+                        <div class="faq-answer">Engineering students from any branch (CS, IT, ECE, Mechanical, Civil, Electrical, etc.) who are in their 2nd, 3rd, or final year can apply. Recent graduates are also welcome.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Will I get a certificate?</span>
+                            <span class="faq-icon">+</span>
+                        </div>
+                        <div class="faq-answer">Yes, upon successful completion of the program and projects, you'll receive a verified certificate that is recognized by 500+ industry partners.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Are there any prerequisites?</span>
+                            <span class="faq-icon">+</span>
+                        </div>
+                        <div class="faq-answer">Basic programming knowledge is recommended. We'll start with fundamentals and gradually move to advanced topics. A laptop with internet connection is required.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>How are the classes conducted?</span>
+                            <span class="faq-icon">+</span>
+                        </div>
+                        <div class="faq-answer">Classes are conducted live online with interactive sessions, recorded for later access. You'll also get access to our exclusive Discord community for 24/7 support.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact-section fade-in-up">
+            <div class="contact-white-bg"></div>
+            <div class="contact-slash-line"></div>
+            
+            <div class="contact-left">
+                <div class="diamond-bg"></div>
+                <div class="contact-left-content">
+                    <h2 class="contact-title">
+                        <span class="light">Ready to</span><br>
+                        <span class="bold">Start Your</span><br>
+                        <span class="gold-text heavy">Journey?</span>
+                    </h2>
+                    <div class="info-boxes">
+                        <div class="info-box">
+                            <span class="icon">📧</span>
+                            <div class="text">
+                                <span class="label">Email</span>
+                                <span class="value">hello@sqrock.com</span>
+                            </div>
+                        </div>
+                        <div class="info-box">
+                            <span class="icon">📍</span>
+                            <div class="text">
+                                <span class="label">Location</span>
+                                <span class="value">Tech Hub, Bangalore</span>
+                            </div>
+                        </div>
+                        <div class="info-box">
+                            <span class="icon">🌐</span>
+                            <div class="text">
+                                <span class="label">Website</span>
+                                <span class="value">www.sqrock.com</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="contact-right">
+                <div class="contact-right-content form-box">
+                    <form onsubmit="event.preventDefault(); window.location.href='https://www.sqrock.cloud/contact';">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" placeholder="">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>College</label>
+                                <input type="text" placeholder="">
+                            </div>
+                            <div class="form-group half">
+                                <label>Branch</label>
+                                <input type="text" placeholder="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea rows="3" placeholder="Tell us about yourself..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Send Message →</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="logo">
+                <span class="logo-text" style="font-size: 20px;">sq<span style="color:var(--gold-primary)">🚀</span>ock</span>
+                <span class="logo-sub">IT Solution</span>
+            </div>
+            <div class="footer-center">© 2025 Sqrock IT Solutions. All rights reserved.</div>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms</a>
+                <a href="https://www.sqrock.cloud/contact">Contact</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Background System
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d', { alpha: false });
+        let width, height;
+        let shardCanvas = document.createElement('canvas');
+        let shardCtx = shardCanvas.getContext('2d', { alpha: false });
+
+        const boxSize = 80;
+        let cols, rows;
+        let activeGlows = [];
+        
+        let animationPhase = 1; // 1: Black, 2: Shockwave, 3: Normal
+        let shockwaveStart = 0;
+
+        function initSize() {
+            width = document.documentElement.scrollWidth;
+            height = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight, window.innerHeight);
+            canvas.width = width;
+            canvas.height = height;
+            shardCanvas.width = width;
+            shardCanvas.height = height;
+            cols = Math.ceil(width / boxSize);
+            rows = Math.ceil(height / boxSize);
+        }
+
+        function drawShards() {
+            shardCtx.fillStyle = '#000000';
+            shardCtx.fillRect(0, 0, width, height);
+            
+            const cellW = 120, cellH = 120;
+            const cCols = Math.ceil(width / cellW);
+            const cRows = Math.ceil(height / cellH);
+            const points = [];
+            
+            for(let i = 0; i <= cCols; i++) {
+                points[i] = [];
+                for(let j = 0; j <= cRows; j++) {
+                    let x = i * cellW + (Math.random() - 0.5) * 100;
+                    let y = j * cellH + (Math.random() - 0.5) * 100;
+                    if(i === 0) x = 0; if(i === cCols) x = width;
+                    if(j === 0) y = 0; if(j === cRows) y = height;
+                    points[i][j] = {x, y};
+                }
+            }
+            
+            const colors = ['#000000', '#0d0d0d', '#1a1a1a', 'rgba(245,166,35,0.3)'];
+            const weights = [50, 30, 15, 5];
+            function getRandomColor() {
+                let r = Math.random() * 100;
+                let sum = 0;
+                for(let i=0; i<weights.length; i++) {
+                    sum += weights[i];
+                    if(r <= sum) return colors[i];
+                }
+                return colors[0];
+            }
+            
+            shardCtx.lineWidth = 0.5;
+            shardCtx.strokeStyle = 'rgba(255,255,255,0.06)';
+            
+            for(let i=0; i<cCols; i++) {
+                for(let j=0; j<cRows; j++) {
+                    let p1 = points[i][j], p2 = points[i+1][j];
+                    let p3 = points[i][j+1], p4 = points[i+1][j+1];
+                    
+                    shardCtx.beginPath();
+                    shardCtx.moveTo(p1.x, p1.y); shardCtx.lineTo(p2.x, p2.y);
+                    shardCtx.lineTo(p3.x, p3.y); shardCtx.closePath();
+                    shardCtx.fillStyle = getRandomColor();
+                    shardCtx.fill(); shardCtx.stroke();
+
+                    shardCtx.beginPath();
+                    shardCtx.moveTo(p2.x, p2.y); shardCtx.lineTo(p4.x, p4.y);
+                    shardCtx.lineTo(p3.x, p3.y); shardCtx.closePath();
+                    shardCtx.fillStyle = getRandomColor();
+                    shardCtx.fill(); shardCtx.stroke();
+                }
+            }
+            
+            let grad = shardCtx.createRadialGradient(width/2, height/2, 0, width/2, height/2, height);
+            grad.addColorStop(0, 'rgba(0,0,0,0)');
+            grad.addColorStop(1, 'rgba(0,0,0,0.8)');
+            shardCtx.fillStyle = grad;
+            shardCtx.fillRect(0, 0, width, height);
+        }
+
+        function bgLoop() {
+            if (animationPhase === 1) {
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(0, 0, width, height);
+            } else {
+                // Smooth Parallax Lerp calculation
+                let targetY = window.scrollY;
+                currentBGScrollY += (targetY - currentBGScrollY) * 0.15;
+
+                // Hardware-Accelerated Parallax Background Updates
+                // Moving these here ensures they are in sync with the canvas redraw and smooth out jitter
+                let bg = document.getElementById('bgCanvas');
+                let bgShine = document.getElementById('bgShine');
+                if (bg) {
+                    bg.style.transform = `translate3d(0, ${-currentBGScrollY * 0.12}px, 0)`;
+                }
+                if (bgShine) {
+                    bgShine.style.transform = `translate3d(${-currentBGScrollY * 0.2}px, ${-currentBGScrollY * 0.2}px, 0)`;
+                }
+
+                // Always redraw the shards to keep the background "alive" as requested
+                ctx.drawImage(shardCanvas, 0, 0);
+                
+                let now = performance.now();
+                for (let i = activeGlows.length - 1; i >= 0; i--) {
+                    let g = activeGlows[i];
+                    let age = now - g.start;
+                    if (age > 5000) { activeGlows.splice(i, 1); continue; }
+                    
+                    let alpha = 0;
+                    if (age < 2000) alpha = (age / 2000) * 0.12;
+                    else if (age < 3000) alpha = 0.12;
+                    else alpha = (1 - ((age - 3000) / 2000)) * 0.12;
+                    
+                    ctx.fillStyle = `rgba(245,166,35,${alpha})`;
+                    ctx.fillRect(g.col * boxSize, g.row * boxSize, boxSize, boxSize);
+                }
+                
+                if (animationPhase === 2) {
+                    let elapsed = now - shockwaveStart;
+                    const SHOCKWAVE_DUR = 10000;
+                    let cx = window.innerWidth / 2;
+                    let cy = window.innerHeight / 2;
+                    let maxRadius = Math.hypot(width, height);
+                    let currentRadius = (elapsed / SHOCKWAVE_DUR) * maxRadius;
+                    
+                    ctx.fillStyle = '#000000';
+                    ctx.beginPath();
+                    ctx.rect(0, 0, width, height);
+                    ctx.arc(cx, cy, currentRadius, 0, Math.PI*2, true);
+                    ctx.fill();
+                    
+                    let waveSpeed = maxRadius / SHOCKWAVE_DUR;
+                    for (let c = 0; c < cols; c++) {
+                        for (let r = 0; r < rows; r++) {
+                            let bx = c * boxSize + boxSize/2;
+                            let by = r * boxSize + boxSize/2;
+                            let dist = Math.hypot(bx - cx, by - cy);
+                            if (dist <= currentRadius) {
+                                let timePassed = (currentRadius - dist) / waveSpeed;
+                                if (timePassed >= 0 && timePassed <= 150) {
+                                    let alpha = 0.9 * (1 - timePassed/150);
+                                    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+                                    ctx.fillRect(c * boxSize, r * boxSize, boxSize, boxSize);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            requestAnimationFrame(bgLoop);
+        }
+
+        // Add a one-time draw for the static background when it first becomes visible
+        function drawInitialBackground() {
+            if (animationPhase >= 3) {
+                ctx.drawImage(shardCanvas, 0, 0);
+            }
+        }
+
+        // Initialize Background & Sequence
+        let currentBGScrollY = 0;
+        initSize();
+        drawShards();
+        requestAnimationFrame(bgLoop);
+
+        let oldWidth = window.innerWidth;
+        window.addEventListener('resize', () => {
+            clearTimeout(window.resizeTimer);
+            window.resizeTimer = setTimeout(() => { 
+                if (Math.abs(window.innerWidth - oldWidth) > 50) {
+                    oldWidth = window.innerWidth;
+                    initSize(); 
+                    drawShards(); 
+                    // Update maxScroll cache on resize
+                    cachedMaxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                }
+            }, 200);
+        });
+
+        let cachedMaxScroll = document.documentElement.scrollHeight - window.innerHeight;
+
+        // On page load, always start from the top for the entry animation
+        window.scrollTo(0, 0);
+
+        setTimeout(() => {
+            animationPhase = 2;
+            shockwaveStart = performance.now();
+        }, 200);
+
+        setTimeout(() => {
+            animationPhase = 3;
+            drawInitialBackground(); // Draw the static shards once
+            document.getElementById('content-wrapper').classList.add('visible');
+            document.body.classList.remove('animating');
+            document.querySelector('.hero-content').classList.add('glitch-enter');
+            document.querySelector('.stats-card-3d').classList.add('smooth-enter-delayed');
+            if(window.initScrollAnimations) window.initScrollAnimations();
+        }, 1800);
+
+        setInterval(() => {
+            if (animationPhase >= 2 && cols && rows) {
+                let col = Math.floor(Math.random() * cols);
+                let row = Math.floor(Math.random() * rows);
+                activeGlows.push({ col, row, start: performance.now() });
+            }
+        }, 800);
+
+        // UI Interactions
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // Setup stagger but don't observe yet
+            document.querySelectorAll('.grid-4, .grid-3').forEach(grid => {
+                grid.querySelectorAll('.card').forEach((card, index) => {
+                    card.classList.add('fade-in-up');
+                    card.style.animationDelay = `${index * 150}ms`;
+                });
+            });
+
+            window.initScrollAnimations = function() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            if(entry.target.classList.contains('stat-number') && !entry.target.dataset.counted) {
+                                animateCounter(entry.target);
+                                entry.target.dataset.counted = true;
+                            }
+                        } else {
+                            entry.target.classList.remove('visible');
+                            if(entry.target.classList.contains('stat-number')) {
+                                entry.target.dataset.counted = false;
+                            }
+                        }
+                    });
+                }, { threshold: 0.1 });
+                
+                document.querySelectorAll('.fade-in-up, .stat-number').forEach(el => observer.observe(el));
+            };
+
+            // Dynamic 3D Scroll Sync — rAF-batched for zero lag
+            let ticking = false;
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    requestAnimationFrame(() => {
+                        let scrollY = window.scrollY;
+                        let progress = cachedMaxScroll > 0 ? scrollY / cachedMaxScroll : 0;
+                        
+                        document.documentElement.style.setProperty('--scroll-progress', progress);
+
+                        if (scrollY > 50) {
+                            document.getElementById('navbar').classList.add('scrolled');
+                        } else {
+                            document.getElementById('navbar').classList.remove('scrolled');
+                        }
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+
+            // Number Counter Animation
+            function animateCounter(el) {
+                const target = parseInt(el.dataset.target);
+                const suffix = el.dataset.suffix || '';
+                const start = performance.now();
+                
+                function update(time) {
+                    const elapsed = time - start;
+                    const progress = Math.min(elapsed / 2000, 1);
+                    const ease = 1 - (1 - progress) * (1 - progress);
+                    el.innerText = Math.floor(ease * target) + suffix;
+                    if (progress < 1) requestAnimationFrame(update);
+                    else el.innerText = target + suffix;
+                }
+                requestAnimationFrame(update);
+            }
+
+            // 3D Tilt for Gain Cards
+            document.querySelectorAll('.gain-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -10;
+                    const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 10;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                });
+            });
+
+            // Journey Timeline Fill
+            window.addEventListener('scroll', () => {
+                const journeySec = document.getElementById('journey');
+                if (!journeySec) return;
+                const rect = journeySec.getBoundingClientRect();
+                const winH = window.innerHeight;
+                if (rect.top < winH && rect.bottom > 0) {
+                    let scrolledIn = winH - rect.top;
+                    let totalScroll = rect.height + winH;
+                    let progress = Math.max(0, Math.min(1, scrolledIn / totalScroll));
+                    let progressLine = Math.max(0, Math.min(100, (progress - 0.2) * 150)); 
+                    document.querySelector('.timeline-progress').style.width = `${progressLine}%`;
+                    
+                    document.querySelectorAll('.timeline-node').forEach((node, idx) => {
+                        if (progressLine >= (idx * 33.33)) node.classList.add('active');
+                        else node.classList.remove('active');
+                    });
+                }
+            });
+
+            // FAQ Accordion
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    let openItem = document.querySelector('.faq-item.open');
+                    if(openItem && openItem !== item) openItem.classList.remove('open');
+                    item.classList.toggle('open');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
